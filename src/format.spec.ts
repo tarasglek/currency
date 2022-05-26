@@ -297,6 +297,10 @@ describe('format', () => {
 
   it('support edge cases', () => {
     assert.strictEqual(
+      format({amount:999999n, currency:'ETH'}, {currencyDisplay:'name', minorUnitDigits: 4}, 'US'),
+      '99.9999 ETH'
+    );
+    assert.strictEqual(
       format({ amount: BigInt('123456789012345678901234567890'), currency: 'USD' }),
       '$1,234,567,890,123,456,789,012,345,678.90'
     );

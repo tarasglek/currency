@@ -12,30 +12,35 @@ export type Amount = string | bigint | -0;
 
 export interface Money {
   amount: Amount;
-  currency: CurrencyAlphabeticCode;
+  currency: CurrencyAlphabeticCode | string;
 }
 
 export interface CurrencyFormatOptions extends Pick<Intl.NumberFormatOptions, 'useGrouping'> {
   currencyDisplay?: 'code' | 'symbol' | 'name';
   useCurrency?: boolean;
   useDecimal?: boolean;
+  minorUnitDigits?: number;
 }
 
-export const defaultCurrencyFormatOptions: Required<CurrencyFormatOptions> = Object.freeze({
+export const defaultCurrencyFormatOptions: CurrencyFormatOptions = Object.freeze({
   currencyDisplay: 'symbol',
   useCurrency: true,
   useGrouping: true,
   useDecimal: true,
-});
+  minorUnitDigits: undefined
+}) ;
 
 export function format(
   { amount, currency }: Money,
   options?: CurrencyFormatOptions,
   locales?: string | string[]
 ): string {
-  const resolvedOptions: Required<CurrencyFormatOptions> = { ...defaultCurrencyFormatOptions, ...options };
+  const resolvedOptions: CurrencyFormatOptions = { ...defaultCurrencyFormatOptions, ...options };
   const amountInteger = typeof amount === 'bigint' ? amount : BigInt(amount);
-  const minorUnitDigits = getMinorUnitDigits(currency);
+  const minorUnitDigits = (typeof resolvedOptions.minorUnitDigits === 'number' 
+    ? resolvedOptions.minorUnitDigits
+    : getMinorUnitDigits(currency as CurrencyAlphabeticCode)
+  );
   const minorUnit = BigInt(10) ** BigInt(minorUnitDigits);
 
   /*
