@@ -37,10 +37,14 @@ export function format(
 ): string {
   const resolvedOptions: CurrencyFormatOptions = { ...defaultCurrencyFormatOptions, ...options };
   const amountInteger = typeof amount === 'bigint' ? amount : BigInt(amount);
-  const minorUnitDigits = (typeof resolvedOptions.minorUnitDigits === 'number' 
-    ? resolvedOptions.minorUnitDigits
-    : getMinorUnitDigits(currency as CurrencyAlphabeticCode)
-  );
+  let minorUnitDigits: number;
+  const currencyFull = currency;
+  if (typeof resolvedOptions.minorUnitDigits === 'number') {
+    minorUnitDigits = resolvedOptions.minorUnitDigits
+    currency = currencyFull.substring(0, 3)
+  } else {
+    minorUnitDigits = getMinorUnitDigits(currency as CurrencyAlphabeticCode)
+  }
   const minorUnit = BigInt(10) ** BigInt(minorUnitDigits);
 
   /*
@@ -76,7 +80,13 @@ export function format(
         ({ type }) =>
           (type !== 'currency' || resolvedOptions.useCurrency) && (type !== 'decimal' || resolvedOptions.useDecimal)
       )
-      .map((part) => (part.type === 'fraction' ? minorUnitAmount : part.value))
+      .map((part) => {
+        switch(part.type) {
+          case 'fraction': return minorUnitAmount
+          case 'currency': return currencyFull
+          default: return part.value
+       }
+      })
       .join('')
   );
 }
