@@ -41,7 +41,8 @@ export function format(
   const currencyFull = currency;
   if (typeof resolvedOptions.minorUnitDigits === 'number') {
     minorUnitDigits = resolvedOptions.minorUnitDigits
-    currency = currencyFull.substring(0, 3)
+    // Provide a dummy value for Intl.NumberFormat
+    currency = "FOO"
   } else {
     minorUnitDigits = getMinorUnitDigits(currency as CurrencyAlphabeticCode)
   }
@@ -83,7 +84,8 @@ export function format(
       .map((part) => {
         switch(part.type) {
           case 'fraction': return minorUnitAmount
-          case 'currency': return currencyFull
+          case 'currency':
+            return currency != currencyFull ? currencyFull : part.value
           default: return part.value
        }
       })

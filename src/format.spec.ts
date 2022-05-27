@@ -301,6 +301,14 @@ describe('format', () => {
       '99.9999 ETH'
     );
     assert.strictEqual(
+      format({amount:1n, currency:'sFUEL'}, {currencyDisplay:'name', minorUnitDigits: 4}, 'US'),
+      '0.0001 sFUEL'
+    );
+    assert.strictEqual(
+      format({amount:10000n, currency:'Lido Staked SOL'}, {currencyDisplay:'name', minorUnitDigits: 4}, 'US'),
+      '1.0000 Lido Staked SOL'
+    );
+    assert.strictEqual(
       format({ amount: BigInt('123456789012345678901234567890'), currency: 'USD' }),
       '$1,234,567,890,123,456,789,012,345,678.90'
     );
